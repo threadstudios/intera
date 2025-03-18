@@ -16,6 +16,7 @@ import { withScalar } from "./dx/scalar";
 import { Logger } from "./logger";
 import { withApiClient } from "./dx/apiClient";
 import { HttpError } from "./errors";
+import fastifyCors from "@fastify/cors";
 
 export async function InteraServer({
   coreModule,
@@ -34,6 +35,7 @@ export async function InteraServer({
 
   await fastify.register(fastifyCookie);
   await fastify.register(fastifyExpress);
+  await fastify.register(fastifyCors);
   fastify.register(fastifyStatic, {
     root: `${process.cwd()}/public`,
     prefix: "/public/",

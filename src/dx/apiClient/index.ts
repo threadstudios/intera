@@ -17,7 +17,10 @@ export function withApiClient({
 
     createClient({
       input: join(config.appDirectory, "public", "api.json"),
-      output: modulePath,
+      output: {
+        path: modulePath,
+        clean: false,
+      },
       plugins: [...required],
       logs: {
         level: "silent",
