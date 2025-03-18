@@ -1,0 +1,7 @@
+{
+  "name": "@intera/client",
+  "private": true,
+  "main": "client/index.ts",
+  "devDependencies": {},
+  "dependencies": {}
+}

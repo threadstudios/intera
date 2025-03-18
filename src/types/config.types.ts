@@ -1,8 +1,7 @@
 export type InteraConfig = {
-  withApiClient?: boolean;
   apiClientPath?: string;
   withScalar?: boolean;
   withOpenApi?: boolean;
-  withClientGenerator?: string;
+  withClientGenerator?: string[];
   apiName?: string;
 };
