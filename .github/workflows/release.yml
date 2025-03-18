@@ -24,4 +24,4 @@ jobs:
       - name: Publish to npm
         run: bun publish
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_KEY }}
+          NPM_CONFIG_TOKEN: ${{ secrets.NPM_PUBLISH_KEY }}
