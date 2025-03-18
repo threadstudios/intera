@@ -25,6 +25,9 @@ export function withApiClient({
     });
 
     const template = require("./package.template.json");
-    Bun.write(join(modulePath, "package.json"), template);
+    Bun.write(
+      join(modulePath, "package.json"),
+      JSON.stringify(template, null, 2)
+    );
   }
 }
