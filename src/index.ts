@@ -26,7 +26,10 @@ export async function InteraServer({
 	coreModule: Function;
 	config: InteraConfig;
 }) {
-	const configClass = new Intera__Config(config.apiClientPath);
+	const configClass = new Intera__Config(
+		config.apiClientPath,
+		config.apiBaseUrl,
+	);
 	Container.set(Intera__Config, configClass);
 	Container.get(coreModule);
 	const loggerInstance = new Logger();
