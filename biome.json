@@ -1,14 +1,17 @@
 {
-  "linter": {
-    "rules": {
-      "complexity": {
-        "noBannedTypes": "off"
-      }
-    }
-  },
-  "javascript": {
-    "parser": {
-      "unsafeParameterDecoratorsEnabled": true
-    }
-  }
+	"linter": {
+		"rules": {
+			"complexity": {
+				"noBannedTypes": "off"
+			},
+			"style": {
+				"useImportType": "off"
+			}
+		}
+	},
+	"javascript": {
+		"parser": {
+			"unsafeParameterDecoratorsEnabled": true
+		}
+	}
 }
