@@ -2,7 +2,7 @@
 	"name": "@threadws/intera",
 	"module": "src/index.ts",
 	"type": "module",
-	"version": "0.1.2",
+	"version": "0.1.3",
 	"engines": {
 		"bun": "1.2.5"
 	},
@@ -11,8 +11,8 @@
 			"import": "./src/index.ts"
 		},
 		"./errors": {
-			"types": "./src/errors.ts",
-			"default": "./src/errors.ts"
+			"types": "./src/errors/index.ts",
+			"default": "./src/errors/index.ts"
 		},
 		"./rest": {
 			"types": "./src/rest.ts",
