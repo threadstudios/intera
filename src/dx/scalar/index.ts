@@ -11,7 +11,7 @@ export async function withScalar({
 }) {
 	if (required) {
 		await fastify.register(import("@scalar/fastify-api-reference"), {
-			routePrefix: "/reference",
+			routePrefix: "/docs",
 			logLevel: "info",
 			configuration: {
 				url: "/public/api.json",
@@ -19,6 +19,6 @@ export async function withScalar({
 		});
 
 		const logger = Container.get(Logger);
-		logger.info("Scalar enabled: http://localhost:3200/reference");
+		logger.info("Scalar enabled\t\t/docs");
 	}
 }
