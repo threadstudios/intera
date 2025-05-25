@@ -4,7 +4,12 @@ import fastifyCookie from "@fastify/cookie";
 import fastifyCors from "@fastify/cors";
 import fastifyExpress from "@fastify/express";
 import fastifyStatic from "@fastify/static";
-import Fastify, { type FastifyInstance } from "fastify";
+import Fastify, {
+	FastifyReply,
+	FastifyRequest,
+	type FastifyInstance,
+} from "fastify";
+import { match } from "ts-pattern";
 import { Container } from "typedi";
 import { Intera__RouterCache } from "./caches/RouterCache";
 import { Intera__Config } from "./config";
@@ -15,9 +20,14 @@ import { withOpenApiGenerator } from "./dx/openAPI";
 import { withScalar } from "./dx/scalar";
 import { HttpError } from "./errors";
 import { Logger } from "./logger";
+import { buildMiddlewares } from "./route/buildMiddlewares";
 import { validate } from "./route/validate";
 import type { InteraConfig } from "./types/config.types";
-import type { InteraRequest } from "./types/router.types";
+import type {
+	InteraMiddleware,
+	InteraReply,
+	InteraRequest,
+} from "./types/router.types";
 
 export async function InteraServer({
 	coreModule,
@@ -46,12 +56,19 @@ export async function InteraServer({
 	});
 
 	const routes = Container.get(Intera__RouterCache).getAllRoutes();
-
 	const finalCodegenRoutes = routes.map((routeRecord) => {
 		const controllerRoute = getControllerRoute(routeRecord.target.constructor);
-		const routePath = controllerRoute
-			? `${controllerRoute}${routeRecord.route}`
-			: routeRecord.route;
+
+		const routePath = match(routeRecord)
+			.with({ method: "*" }, () => {
+				return routeRecord.route;
+			})
+			.otherwise(() => {
+				return controllerRoute
+					? `${controllerRoute}${routeRecord.route}`
+					: routeRecord.route;
+			});
+
 		return {
 			...routeRecord,
 			route: routePath,
@@ -72,9 +89,18 @@ export async function InteraServer({
 		const { method, target, handler, route, middlewares, schemas } =
 			routeRecord;
 		const controllerInstance = Container.get(target.constructor);
-
 		if (method === "*") {
-			fastify.use(route, middlewares);
+			fastify.use(
+				route,
+				(req: InteraRequest, res: InteraReply, done: (err?: Error) => void) => {
+					const builtMiddleware = buildMiddlewares(middlewares);
+					Promise.all(builtMiddleware.map((bm) => bm(req, res)))
+						.then(() => done())
+						.catch((err) => {
+							done(err);
+						});
+				},
+			);
 		} else {
 			const isDeleteOrGet = ["delete", "get"].includes(method);
 			loggerInstance.info(
@@ -82,7 +108,9 @@ export async function InteraServer({
 			);
 			fastify[method](
 				route,
-				{ preHandler: middlewares ?? [] },
+				{
+					preHandler: buildMiddlewares(middlewares),
+				},
 				async (request, reply) => {
 					try {
 						if (schemas?.[0]) {
@@ -137,4 +165,8 @@ export async function InteraServer({
 export { Service } from "typedi";
 export { Module } from "./decorators/Module";
 export { Controller } from "./decorators/Controller";
-export type { InteraRequest, InteraReply } from "./types/router.types";
+export type {
+	InteraRequest,
+	InteraReply,
+	InteraMiddleware,
+} from "./types/router.types";

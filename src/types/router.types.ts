@@ -1,4 +1,5 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
+import { Token } from "typedi";
 import { ZodAny } from "zod/v4";
 
 export type RouterCacheRecord = {
@@ -16,7 +17,7 @@ export type RouterCacheRecord = {
 		| "options"
 		| "head"
 		| "*";
-	middlewares?: RouterMiddleware[];
+	middlewares?: Token<unknown>[];
 	input?: unknown;
 	output?: unknown;
 	schemas?: [ZodAny, ZodAny];
@@ -38,11 +39,9 @@ export enum RestMethods {
 	All = "*",
 }
 
-export type RouterMiddleware = (
-	request: FastifyRequest,
-	reply: FastifyReply,
-	done: (err?: Error) => void,
-) => void;
+export interface InteraMiddleware {
+	run: (request: InteraRequest, reply: InteraReply) => Promise<void>;
+}
 
 export interface InteraRequest extends FastifyRequest {
 	params: Record<string, string>;
