@@ -1,14 +1,10 @@
-import { ArkErrors, type Type } from "arktype";
-import { BadRequestError } from "../errors";
+import z, { ZodAny } from "zod/v4";
+import { safeParse } from "zod/v4-mini";
+import { ValidationError } from "../errors";
 
-export function validate(type: Type, data: unknown) {
-  const result = type(data);
-  if (result instanceof ArkErrors) {
-    throw new BadRequestError({
-      message: "Validation Failed",
-      body: {
-        errors: result.map((res) => res.message),
-      },
-    });
-  }
+export function validate(schema: ZodAny, data: unknown, reference: string) {
+	const result = safeParse(schema, data);
+	if (result.error) {
+		throw new ValidationError({ error: result.error, reference });
+	}
 }

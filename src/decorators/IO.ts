@@ -1,11 +1,11 @@
 import Container from "typedi";
+import type { ZodAny } from "zod/v4";
 import { Intera__RouterCache } from "../caches/RouterCache";
-import type { Type } from "arktype";
 
-export function IO(schemas: [Type<unknown>, Type<unknown>]) {
-  return (target: object, propertyKey: string | symbol) => {
-    const routeKey = `${target.constructor.name}.${propertyKey.toString()}`;
-    const routerCache = Container.get(Intera__RouterCache);
-    routerCache.setSchemas(routeKey, schemas);
-  };
+export function IO(schemas: [ZodAny, ZodAny]) {
+	return (target: object, propertyKey: string | symbol) => {
+		const routeKey = `${target.constructor.name}.${propertyKey.toString()}`;
+		const routerCache = Container.get(Intera__RouterCache);
+		routerCache.setSchemas(routeKey, schemas);
+	};
 }

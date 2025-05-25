@@ -3,10 +3,11 @@ import type {
 	OperationObject,
 	ParameterObject,
 	SchemaObject,
+	SchemaObjectType,
 } from "openapi3-ts/oas31";
 
-import { type } from "arktype";
 import { P, match } from "ts-pattern";
+import z from "zod/v4";
 import type { RouterCacheRecord } from "../../types/router.types";
 
 export class OpenApiGenerator {
@@ -28,7 +29,7 @@ export class OpenApiGenerator {
 	extractPathParameters(path: string): ParameterObject[] {
 		const paramRegex = /:([^/]+)/g;
 		const matches = path.matchAll(paramRegex);
-		const parameters = [];
+		const parameters: ParameterObject[] = [];
 		for (const match of matches) {
 			parameters.push({
 				name: match[1],
@@ -58,7 +59,7 @@ export class OpenApiGenerator {
 		};
 
 		for (const route of this.routerRecord) {
-			const voidSchema = type({});
+			const voidSchema = z.null();
 			const schemas = route.schemas ? route.schemas : [voidSchema, voidSchema];
 
 			const [inputSchema, outputSchema] = schemas;
@@ -71,7 +72,7 @@ export class OpenApiGenerator {
 						description: "Successful response",
 						content: {
 							"application/json": {
-								schema: outputSchema.toJsonSchema(),
+								schema: z.toJSONSchema(outputSchema),
 							},
 						},
 					},
@@ -84,18 +85,21 @@ export class OpenApiGenerator {
 					operation.requestBody = {
 						content: {
 							"application/json": {
-								schema: inputSchema.toJsonSchema(),
+								schema: z.toJSONSchema(inputSchema) as unknown as SchemaObject,
 							},
 						},
 					};
 				})
 				.with(P.union("get", "delete"), () => {
-					const input = inputSchema.toJsonSchema() as unknown as {
+					const input = z.toJSONSchema(inputSchema) as unknown as {
 						properties?: Record<string, SchemaObject> | undefined;
 						required: string[];
 					};
 					if (input?.properties) {
 						for (const key of Object.keys(input.properties)) {
+							if (!operation.parameters) {
+								operation.parameters = [];
+							}
 							operation?.parameters.push({
 								name: key,
 								in: "query",

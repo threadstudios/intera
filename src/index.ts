@@ -63,6 +63,11 @@ export async function InteraServer({
 		routes: finalCodegenRoutes,
 	});
 
+	await withScalar({
+		required: config.withScalar ?? false,
+		fastify,
+	});
+
 	for (const routeRecord of finalCodegenRoutes) {
 		const { method, target, handler, route, middlewares, schemas } =
 			routeRecord;
@@ -84,6 +89,7 @@ export async function InteraServer({
 							validate(
 								schemas[0],
 								isDeleteOrGet ? request.query : request.body,
+								"Request Input",
 							);
 						}
 						const args = Array.from(
@@ -99,7 +105,7 @@ export async function InteraServer({
 						);
 						const result = await handler.apply(controllerInstance, args);
 						if (schemas?.[1]) {
-							validate(schemas[1], result);
+							validate(schemas[1], result, "Request Output");
 						}
 						reply.send(result);
 					} catch (error: unknown) {
@@ -118,11 +124,6 @@ export async function InteraServer({
 			);
 		}
 	}
-
-	withScalar({
-		required: config.withScalar ?? false,
-		fastify,
-	});
 
 	withApiClient({
 		required: config.withClientGenerator,
