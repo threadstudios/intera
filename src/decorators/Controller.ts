@@ -1,23 +1,17 @@
-import Container, { Service } from "typedi";
-import type { RouterMiddleware } from "../types/router.types";
-import { Intera__RouterCache } from "../caches/RouterCache";
 import "reflect-metadata";
+import Container, { Service } from "typedi";
+import type { InteraMiddleware } from "../types/router.types";
+import { Intera__RouterCache } from "../caches/RouterCache";
 
 const CONTROLLER_KEY = Symbol("INTERA_CONTROLLER");
 
-export function Controller(path?: string, middlewares?: RouterMiddleware[]) {
+export function Controller(path?: string, middlewares?: InteraMiddleware[]) {
   return <TFunction extends Function>(ctor: TFunction) => {
     Service()(ctor);
     Reflect.defineMetadata(CONTROLLER_KEY, path, ctor);
     if (middlewares && path) {
       const routerCache = Container.get(Intera__RouterCache);
-      routerCache.setRoute(`controller.${path}`, {
-        method: "*",
-        route: path,
-        target: ctor.prototype,
-        handler: null,
-        middlewares: middlewares || [],
-      });
+      routerCache.setMiddleware(path, middlewares || []);
     }
   };
 }

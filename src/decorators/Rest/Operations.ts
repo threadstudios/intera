@@ -1,12 +1,12 @@
 import { Container } from "typedi";
 import { Intera__RouterCache } from "../../caches/RouterCache";
-import { RestMethods, type RouterMiddleware } from "../../types/router.types";
+import { RestMethods, type InteraMiddleware } from "../../types/router.types";
 import "reflect-metadata";
 
 export const ROUTE_METADATA_KEY = Symbol("ROUTE_METADATA");
 
 function createMethodDecorator(method: RestMethods) {
-  return (path: string, middlewares?: RouterMiddleware[]) =>
+  return (path: string, middlewares?: InteraMiddleware[]) =>
     (target: object, propertyKey: string, descriptor: PropertyDescriptor) => {
       const routeKey = `${target.constructor.name}.${propertyKey}`;
 

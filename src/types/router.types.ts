@@ -1,6 +1,5 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { Token } from "typedi";
-import { ZodAny } from "zod/v4";
+import { ZodType } from "zod/v4";
 
 export type RouterCacheRecord = {
   route: string;
@@ -8,19 +7,11 @@ export type RouterCacheRecord = {
   handler?: any;
   target: object;
   parent?: object;
-  method:
-    | "get"
-    | "post"
-    | "put"
-    | "delete"
-    | "patch"
-    | "options"
-    | "head"
-    | "*";
-  middlewares?: Token<unknown>[];
+  method: "get" | "post" | "put" | "delete" | "patch" | "options" | "head";
+  middlewares?: InteraMiddleware[];
   input?: unknown;
   output?: unknown;
-  schemas?: [ZodAny, ZodAny];
+  schemas?: [ZodType, ZodType];
 };
 
 export type RouterCacheRecordPatchable = {
@@ -36,20 +27,28 @@ export enum RestMethods {
   Patch = "patch",
   Options = "options",
   Head = "head",
-  All = "*",
 }
 
-export interface InteraMiddleware {
-  run: (request: InteraRequest, reply: InteraReply) => Promise<void>;
+export abstract class InteraMiddlewareClass {
+  abstract run(request: InteraRequest, reply: InteraReply): Promise<void>;
 }
 
-export interface InteraRequest<T extends Record<string, unknown> = {}>
+// biome-ignore lint/suspicious/noExplicitAny: We don't know what DI arguments are in each middleware
+export type InteraMiddleware = new (...args: any[]) => InteraMiddlewareClass;
+
+export interface InteraRequestContext<RC extends Record<string, unknown> = {}> {
+  get<K extends keyof RC>(key: K): RC[K] | undefined;
+  set<K extends keyof RC>(key: K, value: RC[K]): void;
+  getStore(): RC | undefined;
+}
+
+export interface InteraRequest<RC extends Record<string, unknown> = {}>
   extends FastifyRequest {
   params: Record<string, string>;
   body: Record<string, unknown>;
   query: Record<string, string>;
   cookies: Record<string, string>;
-  vault: T;
+  requestContext: InteraRequestContext<RC>;
 }
 
 export interface InteraReply extends FastifyReply {}
