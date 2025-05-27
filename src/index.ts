@@ -154,3 +154,5 @@ export type {
   InteraReply,
   InteraMiddleware,
 } from "./types/router.types";
+
+export { InteraMiddlewareClass } from "./types/router.types";
