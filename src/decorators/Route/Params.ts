@@ -37,6 +37,15 @@ const params = [
       return id !== undefined ? req.cookies[id] : req.cookies;
     },
   },
+  {
+    name: "ctx",
+    hasArgs: true,
+    fetcher: (req: InteraRequest<Record<string, unknown>>, id?: string) => {
+      return id !== undefined
+        ? req.requestContext.get(id)
+        : req.requestContext.getStore();
+    },
+  },
 ];
 
 function createParamDecorator(name: string, hasArgs: boolean) {
@@ -91,3 +100,4 @@ export const Param = createParamDecorator("params", true);
 export const Cookie = createParamDecorator("cookie", true);
 export const Req = createParamDecorator("req", false);
 export const Res = createParamDecorator("res", false);
+export const Ctx = createParamDecorator("ctx", true);
