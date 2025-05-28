@@ -79,7 +79,7 @@ export function extractAllParams(
       Reflect.getOwnMetadata(`${name}Parameters`, target, propertyKey) || [];
     for (const param of parameters) {
       match(name)
-        .with(P.union("body", "query", "params"), () => {
+        .with(P.union("body", "query", "params", "cookie", "ctx"), () => {
           args[param.index] = hasArgs
             ? fetcher(request, param.name)
             : fetcher(request);
