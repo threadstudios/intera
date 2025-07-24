@@ -33,7 +33,7 @@ export class Intera__RouterCache {
     }
   }
 
-  public setSchemas(key: string, value: [ZodType, ZodType]) {
+  public setSchemas(key: string, value: [ZodType | undefined, ZodType]) {
     this.setRoute(key, {
       schemas: value,
     });

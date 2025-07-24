@@ -11,7 +11,7 @@ export type RouterCacheRecord = {
   middlewares?: InteraMiddleware[];
   input?: unknown;
   output?: unknown;
-  schemas?: [ZodType, ZodType];
+  schemas?: [ZodType | undefined, ZodType];
 };
 
 export type RouterCacheRecordPatchable = {
