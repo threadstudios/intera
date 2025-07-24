@@ -8,6 +8,7 @@ export class Intera__Config {
   constructor(apiClientPath?: string, apiBaseUrl?: string) {
     this.appDirectory = process.cwd();
     this.apiBaseUrl = apiBaseUrl;
-    this.moduleDirectory = apiClientPath || path.join(__dirname, "../../");
+    this.moduleDirectory =
+      apiClientPath || path.join(__dirname, "../../../", "@intera", "client");
   }
 }

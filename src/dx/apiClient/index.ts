@@ -13,7 +13,7 @@ export function withApiClient({
     const config = Container.get(Intera__Config);
     const logger = Container.get(Logger);
     logger.info("Creating API client");
-    const modulePath = join(config.moduleDirectory, "../", "@intera", "client");
+    const modulePath = join(config.moduleDirectory);
 
     createClient({
       input: join(config.appDirectory, "public", "api.json"),
