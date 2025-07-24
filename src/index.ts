@@ -46,7 +46,10 @@ export async function InteraServer({
 
   await fastify.register(fastifyCookie);
   await fastify.register(fastifyExpress);
-  await fastify.register(fastifyCors);
+  await fastify.register(fastifyCors, {
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  });
   fastify.register(fastifyStatic, {
     root: `${process.cwd()}/public`,
     prefix: "/public/",
