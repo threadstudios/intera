@@ -77,18 +77,22 @@ export class OpenApiGenerator {
         parameters: [...this.extractPathParameters(route.route)],
       };
 
+      const validInputSchema = inputSchema ? inputSchema : z.object();
+
       match(method)
         .with(P.union("post", "put", "patch"), () => {
           operation.requestBody = {
             content: {
               "application/json": {
-                schema: z.toJSONSchema(inputSchema) as unknown as SchemaObject,
+                schema: z.toJSONSchema(
+                  validInputSchema
+                ) as unknown as SchemaObject,
               },
             },
           };
         })
         .with(P.union("get", "delete"), () => {
-          const input = z.toJSONSchema(inputSchema) as unknown as {
+          const input = z.toJSONSchema(validInputSchema) as unknown as {
             properties?: Record<string, SchemaObject> | undefined;
             required: string[];
           };
