@@ -8,4 +8,7 @@ export type InteraConfig = {
   withClientGenerator?: string[];
   apiName?: string;
   cors?: FastifyCorsOptions;
+  logging?: {
+    request?: boolean;
+  };
 };

@@ -106,6 +106,11 @@ export async function InteraServer({
         preHandler: buildMiddlewares(middlewares),
       },
       async (request, reply) => {
+        let requestStart: DOMHighResTimeStamp | undefined;
+        if (config.logging?.request) {
+          requestStart = performance.now();
+          loggerInstance.info("Request started", { route });
+        }
         try {
           if (schemas?.[0]) {
             validate(
@@ -125,6 +130,13 @@ export async function InteraServer({
           const result = await handler.apply(controllerInstance, args);
           if (schemas?.[1]) {
             validate(schemas[1], result, "Request Output");
+          }
+          if (config.logging?.request && requestStart) {
+            const requestEnd = performance.now();
+            loggerInstance.info("Request completed", {
+              route,
+              ms: (requestEnd - requestStart).toFixed(2),
+            });
           }
           reply.send(result);
         } catch (error: unknown) {
