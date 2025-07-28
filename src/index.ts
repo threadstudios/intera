@@ -135,12 +135,13 @@ export async function InteraServer({
             const requestEnd = performance.now();
             loggerInstance.info("Request completed", {
               route,
-              ms: (requestEnd - requestStart).toFixed(2),
+              ms: (requestEnd - requestStart).toFixed(0),
             });
           }
           reply.send(result);
         } catch (error: unknown) {
           if (error instanceof HttpError) {
+            loggerInstance.error("Caught service error", { error });
             reply
               .code(error.statusCode)
               .send({ error: error.message, ...error.body });
