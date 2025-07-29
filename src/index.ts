@@ -20,8 +20,8 @@ import { buildMiddlewares } from "./route/buildMiddlewares";
 import { validate } from "./route/validate";
 import type { InteraConfig } from "./types/config.types";
 import type {
+  FinalRouterRecord,
   InteraMiddleware,
-  InteraReply,
   InteraRequest,
 } from "./types/router.types";
 
@@ -65,7 +65,9 @@ export async function InteraServer({
   });
   const routerCache = Container.get(Intera__RouterCache);
   const routes = routerCache.getAllRoutes();
-  const finalCodegenRoutes = routes.map((routeRecord) => {
+  const finalCodegenRoutes: FinalRouterRecord[] = [];
+
+  for (const routeRecord of routes) {
     const controllerRoute = getControllerRoute(routeRecord.target.constructor);
     const controllerMiddlewares: InteraMiddleware[] =
       routerCache.getControllerMiddlewares(controllerRoute);
@@ -73,14 +75,19 @@ export async function InteraServer({
       ? `${controllerRoute}${routeRecord.route}`
       : routeRecord.route;
 
-    return {
+    if (!routePath) {
+      loggerInstance.error("Invalid Route Specified", { routeRecord });
+      break;
+    }
+
+    finalCodegenRoutes.push({
       ...routeRecord,
       middlewares: routeRecord.middlewares
         ? [...controllerMiddlewares, ...routeRecord.middlewares]
         : [...controllerMiddlewares],
       route: routePath,
-    };
-  });
+    });
+  }
 
   withOpenApiGenerator({
     required: config.withOpenApi ?? false,
@@ -109,7 +116,7 @@ export async function InteraServer({
         let requestStart: DOMHighResTimeStamp | undefined;
         if (config.logging?.request) {
           requestStart = performance.now();
-          loggerInstance.info("Request started", { route });
+          loggerInstance.info(`Request started: ${route}`);
         }
         try {
           if (schemas?.[0]) {
@@ -133,10 +140,11 @@ export async function InteraServer({
           }
           if (config.logging?.request && requestStart) {
             const requestEnd = performance.now();
-            loggerInstance.info("Request completed", {
-              route,
-              ms: (requestEnd - requestStart).toFixed(0),
-            });
+            loggerInstance.info(
+              `Request completed: ${route} - ${(
+                requestEnd - requestStart
+              ).toFixed(0)}ms`
+            );
           }
           reply.send(result);
         } catch (error: unknown) {

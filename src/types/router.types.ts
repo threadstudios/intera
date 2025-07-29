@@ -1,8 +1,8 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { ZodType } from "zod/v4";
 
-export type RouterCacheRecord = {
-  route: string;
+export interface RouterCacheRecord {
+  route?: string | undefined;
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   handler?: any;
   target: object;
@@ -12,7 +12,11 @@ export type RouterCacheRecord = {
   input?: unknown;
   output?: unknown;
   schemas?: [ZodType | undefined | null, ZodType];
-};
+}
+
+export interface FinalRouterRecord extends RouterCacheRecord {
+  route: string;
+}
 
 export type RouterCacheRecordPatchable = {
   input: unknown;
