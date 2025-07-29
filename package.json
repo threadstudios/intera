@@ -2,7 +2,7 @@
   "name": "@threadws/intera",
   "module": "src/index.ts",
   "type": "module",
-  "version": "0.2.16",
+  "version": "0.2.17",
   "engines": {
     "bun": "1.2.5"
   },
