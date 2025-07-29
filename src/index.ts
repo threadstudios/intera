@@ -72,7 +72,7 @@ export async function InteraServer({
     const controllerMiddlewares: InteraMiddleware[] =
       routerCache.getControllerMiddlewares(controllerRoute);
     const routePath = controllerRoute
-      ? `${controllerRoute}${routeRecord.route}`
+      ? `${controllerRoute}${routeRecord.route ? routeRecord.route : ""}`
       : routeRecord.route;
 
     if (!routePath) {

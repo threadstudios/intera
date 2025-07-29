@@ -68,9 +68,7 @@ export class Intera__RouterCache {
       const routeParsed = safeParse(routeCacheItemSchema, value);
       if (!routeParsed.error) {
         routeCacheRecords.push(value as RouterCacheRecord);
-        break;
       }
-      console.error(`Error parsing route:\r\n${JSON.stringify(value)}`);
     }
     return routeCacheRecords;
   }
