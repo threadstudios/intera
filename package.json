@@ -2,7 +2,7 @@
   "name": "@threadws/intera",
   "module": "src/index.ts",
   "type": "module",
-  "version": "0.2.18",
+  "version": "0.2.19",
   "engines": {
     "bun": "1.2.5"
   },
@@ -52,6 +52,6 @@
     "reflect-metadata": "^0.2.2",
     "ts-pattern": "^5.6.2",
     "typedi": "^0.10.0",
-    "zod": "^3.25.28"
+    "zod": "v4.0.13"
   }
 }
